@@ -19,12 +19,22 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: 3. Compilar codigo Java con paquete
-      run: javac -d bin src/tpobservabilidadjava/ObservabilidadDemo.java
+    - name: 3. Mostrar estructura de carpetas
+      run: |
+        echo "=== Directorios presentes ==="
+        find . -maxdepth 4 -not -path '*/.*'
 
-    - name: 4. Ejecutar simulacion y enviar logs a Loki
+    - name: 4. Compilar codigo Java
+      run: |
+        mkdir -p bin
+        javac -d bin $(find . -name "*.java" -not -path "./.github/*")
+
+    - name: 5. Ejecutar simulacion y enviar logs a Loki
       env:
         LOKI_URL: "https://logs-prod-024.grafana.net/loki/api/v1/push"
         LOKI_USER: "1825198"
         LOKI_API_KEY: ${{ secrets.LOKI_API_KEY }}
-      run: java -cp bin tpobservabilidadjava.ObservabilidadDemo
+      run: |
+        MAIN_CLASS=$(find bin -name "ObservabilidadDemo.class" | sed 's|bin/||; s|\.class$||; s|/|.|g')
+        echo "Ejecutando: $MAIN_CLASS"
+        java -cp bin "$MAIN_CLASS"
