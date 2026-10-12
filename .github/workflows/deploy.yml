@@ -19,28 +19,15 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: 3. Compilar codigo Java
+    - name: 3. Compilar proyecto modular Java
       run: |
         mkdir -p bin
-        JAVA_FILES=$(find . -name "*.java" -not -path "./.github/*")
-        echo "Archivos Java encontrados:"
-        echo "$JAVA_FILES"
-        javac -d bin $JAVA_FILES
+        javac --source-path src -d bin src/module-info.java src/tpobservabilidadjava/ObservabilidadDemo.java
 
-    - name: 4. Inspeccionar binarios compilados y ejecutar
+    - name: 4. Ejecutar modulo y emitir logs a Grafana Loki
       env:
         LOKI_URL: "https://logs-prod-024.grafana.net/loki/api/v1/push"
         LOKI_USER: "1825198"
         LOKI_API_KEY: ${{ secrets.LOKI_API_KEY }}
       run: |
-        echo "=== Contenido generado en bin ==="
-        find bin -name "*.class"
-
-        # Detecta la ruta relativa del archivo class dentro de bin y la convierte en paquete.Clase
-        CLASS_PATH=$(find bin -name "ObservabilidadDemo.class" | head -n 1)
-        REL_PATH="${CLASS_PATH#bin/}"
-        NO_EXT="${REL_PATH%.class}"
-        CANONICAL_NAME=$(echo "$NO_EXT" | tr '/' '.')
-
-        echo "Nombre canonico detectado: $CANONICAL_NAME"
-        java -cp bin "$CANONICAL_NAME"
+        java -p bin -m tpobservabilidadjava/tpobservabilidadjava.ObservabilidadDemo
