@@ -47,6 +47,7 @@ public class ObservabilidadDemo {
         }
 
         System.out.println("\nSimulacion finalizada.");
+        System.exit(0); // Proceso de corte: libera los hilos de red y finaliza el runner de inmediato
     }
 
     private static void enviarLogLoki(String nivel, String mensaje) {
