@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Base64;
 
 public class ObservabilidadDemo {
+	//solo ejemplo
 
     // Se leen desde las variables de entorno inyectadas
     private static final String LOKI_URL = System.getenv().getOrDefault("LOKI_URL", "https://logs-prod-024.grafana.net/loki/api/v1/push");
